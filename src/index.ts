@@ -1,6 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
-import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as dotenv from 'dotenv';
@@ -15,14 +14,8 @@ const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify
   },
 });
 
-server.register(multipart, {
-  limits: {
-    fileSize: 10 * 1024 * 1024,
-  },
-});
 server.register(cors, { 
-  origin: ['http://localhost:3001', 'http://127.0.0.1:3001'],
-  exposedHeaders: ['Content-Type', 'Content-Disposition'], 
+  origin: process.env.CORS_ALLOWED_ORIGINS?.split(' ') ?? [],  exposedHeaders: ['Content-Type', 'Content-Disposition'], 
 });
 /** ratelimit returns this error if limit exceeded
  * {
