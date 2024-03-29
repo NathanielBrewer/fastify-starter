@@ -24,17 +24,14 @@ server.register(cors, {
     message: 'Rate limit exceeded, retry in 1 minute'
   }
  */
+(async function () {
 await server.register(rateLimit, {
   global: true,
   max: 2,
   timeWindow: 1000
 });
-// An attacker could search for valid URLs if your 404 error handling is not rate limited.
-server.setNotFoundHandler({
-  preHandler: server.rateLimit()
-}, function (request, reply) {
-  reply.code(404).send();
-});
+})();
+
 server.register(routes);
 
 server.listen({port: Number(process.env.PORT) ?? 3000, host: process.env.HOST ?? '127.0.0.1'}, (error: Error | null, address: string | number) => {
