@@ -33,8 +33,7 @@ await server.register(rateLimit, {
 })();
 
 server.register(routes);
-
-server.listen({port: Number(process.env.PORT) ?? 3000, host: process.env.HOST ?? '127.0.0.1'}, (error: Error | null, address: string | number) => {
+server.listen({port: Number(process.env.PORT) || 3001, host: process.env.HOST ?? '127.0.0.1'}, (error: Error | null, address: string | number) => {
   if (error) {
     server.log.error(error);
   }
