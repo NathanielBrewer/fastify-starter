@@ -25,11 +25,11 @@ server.register(cors, {
   }
  */
 (async function () {
-await server.register(rateLimit, {
-  global: true,
-  max: 2,
-  timeWindow: 1000
-});
+  await server.register(rateLimit, {
+    global: true,
+    max: 2,
+    timeWindow: 1000
+  });
 })();
 
 server.register(routes);
