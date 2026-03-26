@@ -1,41 +1,21 @@
-import fastify, { FastifyInstance } from 'fastify';
-import cors from '@fastify/cors';
-import rateLimit from '@fastify/rate-limit';
-import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as dotenv from 'dotenv';
-import routes from './routes';
+import { buildApp } from './app';
 
 dotenv.config();
 
-const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({
-  logger: {
-    name: __filename,
-    level: 'info',
-  },
-});
+async function start(): Promise<void> {
+  const server = await buildApp();
 
-server.register(cors, { 
-  origin: process.env.CORS_ALLOWED_ORIGINS?.split(' ') ?? [],  exposedHeaders: ['Content-Type', 'Content-Disposition'], 
-});
-/** ratelimit returns this error if limit exceeded
- * {
-    statusCode: 429,
-    error: 'Too Many Requests',
-    message: 'Rate limit exceeded, retry in 1 minute'
-  }
- */
-(async function () {
-  await server.register(rateLimit, {
-    global: true,
-    max: 2,
-    timeWindow: 1000
-  });
-})();
-
-server.register(routes);
-server.listen({port: Number(process.env.PORT) || 3001, host: process.env.HOST ?? '127.0.0.1'}, (error: Error | null, address: string | number) => {
-  if (error) {
+  try {
+    const address = await server.listen({
+      port: Number(process.env.PORT) || 3001,
+      host: process.env.HOST ?? '127.0.0.1',
+    });
+    server.log.info(`Server listening on ${address}`);
+  } catch (error) {
     server.log.error(error);
+    process.exit(1);
   }
-  server.log.info(`Server listening on ${address}`);
-});
+}
+
+void start();
